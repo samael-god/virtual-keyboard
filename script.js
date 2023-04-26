@@ -1,2 +1,3 @@
-import KEYS from "./keys.js";
+import KEYS from './keys.js';
+
 console.log(KEYS);
