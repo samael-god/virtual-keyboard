@@ -122,6 +122,22 @@ class Key {
     }
   }
 
+  handleDelete() {
+    if (document.querySelector('.Delete')) {
+      const del = document.querySelector('.Delete');
+      del.addEventListener('click', () => {
+        const textarea = document.querySelector('.text-area');
+        if (textarea.selectionStart !== text.length) {
+          const currPosition = textarea.selectionStart;
+          text.splice(currPosition, 1);
+          textarea.value = text.join('');
+          textarea.selectionStart = currPosition;
+          textarea.selectionEnd = textarea.selectionStart;
+        }
+      });
+    }
+  }
+
   handleTab() {
     if (document.querySelector('.Tab')) {
       const tab = document.querySelector('.Tab');
@@ -166,3 +182,4 @@ keyboard.handleEnter();
 keyboard.handleBackSpace();
 keyboard.handleTab();
 keyboard.handleSpace();
+keyboard.handleDelete();
