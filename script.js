@@ -918,6 +918,15 @@ window.addEventListener('keydown', (event) => {
   textarea.focus();
   if (event.code === 'Tab' || event.code === 'AltLeft' || event.code === 'AltRight') {
     event.preventDefault();
+    if (event.code === 'Tab') {
+      const currentPosition = textarea.selectionStart;
+      for (let i = 0; i < 4; i += 1) {
+        text.splice(currentPosition, 0, ' ');
+        textarea.value = text.join('');
+      }
+      textarea.selectionStart = currentPosition + 4;
+      textarea.selectionEnd = textarea.selectionStart;
+    }
   }
   const keys = document.querySelectorAll('.key');
   keys.forEach((key) => {
@@ -953,9 +962,8 @@ class Key {
     wrapper.appendChild(textArea);
     wrapper.appendChild(keyboard);
     document.querySelector('body').appendChild(wrapper);
-    keyboard.addEventListener('click', (event) => {
-      const parent = event.target.parentElement;
-      this.reRender(parent);
+    keyboard.addEventListener('click', () => {
+      document.querySelector('.text-area').focus();
     });
   };
 
@@ -1001,6 +1009,7 @@ class Key {
         text.splice(textarea.selectionStart, 0, '\n');
         textarea.value = text.join('');
         textarea.selectionStart = currPosition + 1;
+        textarea.selectionEnd = textarea.selectionStart;
       });
     }
   }
@@ -1016,13 +1025,42 @@ class Key {
           console.log(textarea.selectionStart, currPosition);
           textarea.value = text.join('');
           textarea.selectionStart = currPosition - 1;
+          textarea.selectionEnd = textarea.selectionStart;
         }
       });
     }
   }
 
-  reRender(value) {
-    this.value = value;
+  handleTab() {
+    if (document.querySelector('.Tab')) {
+      const tab = document.querySelector('.Tab');
+      tab.addEventListener('click', () => {
+        const textarea = document.querySelector('.text-area');
+        textarea.focus();
+        const currentPosition = textarea.selectionStart;
+        for (let i = 0; i < 4; i += 1) {
+          text.splice(currentPosition, 0, ' ');
+          textarea.value = text.join('');
+        }
+        textarea.selectionStart = currentPosition + 4;
+        textarea.selectionEnd = textarea.selectionStart;
+      });
+    }
+  }
+
+  handleSpace() {
+    if (document.querySelector('.Space')) {
+      const space = document.querySelector('.Space');
+      space.addEventListener('click', () => {
+        const textarea = document.querySelector('.text-area');
+        textarea.focus();
+        const currentPosition = textarea.selectionStart;
+        text.splice(currentPosition, 0, ' ');
+        textarea.value = text.join('');
+        textarea.selectionStart = currentPosition + 1;
+        textarea.selectionEnd = textarea.selectionStart;
+      });
+    }
   }
 }
 
@@ -1035,4 +1073,5 @@ keyboard.createRow(KEYS.row4, 4, currLang);
 keyboard.createRow(KEYS.row5, 5, currLang);
 keyboard.handleEnter();
 keyboard.handleBackSpace();
-keyboard.reRender('value');
+keyboard.handleTab();
+keyboard.handleSpace();
