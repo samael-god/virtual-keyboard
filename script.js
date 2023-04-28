@@ -413,9 +413,9 @@ const KEYS = {
     CapsLock: {
       en: {
         lowerCase: 'CapsLock',
-        upperCase: 'CAPSLOCK',
-        shift: 'CAPSLOCK',
-        capslock: 'CAPSLOCK',
+        upperCase: 'CapsLock',
+        shift: 'CapsLock',
+        capslock: 'CapsLock',
       },
       ru: {
         lowerCase: 'CapsLock',
@@ -911,17 +911,46 @@ const longKeys = ['Enter', 'CapsLock', 'ShiftLeft', 'ShiftRight'];
 const controls = ['ControlRight', 'ControlLeft', 'AltRight', 'AltLeft', 'MetaLeft', 'Tab', 'Delete', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Backspace', 'Enter', 'CapsLock', 'ShiftLeft', 'ShiftRight'];
 const currLang = 'ru';
 
-class Key {
-  constructor(row, num) {
-    this.row = row;
-    this.num = num;
-  }
+let text = [];
 
+window.addEventListener('keydown', (event) => {
+  const textarea = document.querySelector('.text-area');
+  textarea.focus();
+  if (event.code === 'Tab' || event.code === 'AltLeft' || event.code === 'AltRight') {
+    event.preventDefault();
+  }
+  const keys = document.querySelectorAll('.key');
+  keys.forEach((key) => {
+    if (key.classList.contains(`${event.code}`)) {
+      if (key.classList.contains('CapsLock') && key.classList.contains('active')) {
+        key.classList.remove('active');
+      } else {
+        key.classList.add('active');
+      }
+    }
+  });
+});
+window.addEventListener('keyup', (event) => {
+  const textarea = document.querySelector('.text-area');
+  text = textarea.value.split('');
+  const keys = document.querySelectorAll('.key');
+  keys.forEach((key) => {
+    if (key.classList.contains(`${event.code}`) && key.classList.contains('active') && !key.classList.contains('CapsLock')) {
+      key.classList.remove('active');
+    }
+  });
+});
+
+class Key {
   createKeyboard = () => {
     const wrapper = document.createElement('div');
     wrapper.classList.add('wrapper');
     const keyboard = document.createElement('div');
     keyboard.classList.add('keyboard');
+    const textArea = document.createElement('textarea');
+    textArea.classList.add('text-area');
+    textArea.setAttribute('autofocus', 'true');
+    wrapper.appendChild(textArea);
     wrapper.appendChild(keyboard);
     document.querySelector('body').appendChild(wrapper);
     keyboard.addEventListener('click', (event) => {
@@ -930,7 +959,9 @@ class Key {
     });
   };
 
-  createRow(row, num) {
+  createRow(row, num, lang, mod = 'lowerCase') {
+    this.row = row;
+    this.num = num;
     const ul = document.createElement('ul');
     const keyArr = Object.keys(row);
     const currentRow = Object.keys(KEYS)[num - 1];
@@ -939,7 +970,7 @@ class Key {
     for (let i = 0; i < keyArr.length; i += 1) {
       const key = document.createElement('li');
       key.classList.add('key');
-      key.innerHTML = KEYS[currentRow][keyArr[i]][currLang].lowerCase;
+      key.innerHTML = KEYS[currentRow][keyArr[i]][lang][mod];
       key.classList.add(`${keyArr[i]}`);
       if (mediumKeys.includes(keyArr[i])) {
         key.classList.add('key_controls-medium');
@@ -961,16 +992,47 @@ class Key {
     document.querySelector('.keyboard').appendChild(ul);
   }
 
+  handleEnter() {
+    if (document.querySelector('.Enter')) {
+      const enter = document.querySelector('.Enter');
+      enter.addEventListener('click', () => {
+        const textarea = document.querySelector('.text-area');
+        const currPosition = textarea.selectionStart;
+        text.splice(textarea.selectionStart, 0, '\n');
+        textarea.value = text.join('');
+        textarea.selectionStart = currPosition + 1;
+      });
+    }
+  }
+
+  handleBackSpace() {
+    if (document.querySelector('.Backspace')) {
+      const backSpace = document.querySelector('.Backspace');
+      backSpace.addEventListener('click', () => {
+        const textarea = document.querySelector('.text-area');
+        if (textarea.selectionStart !== 0) {
+          const currPosition = textarea.selectionStart;
+          text.splice(currPosition - 1, 1);
+          console.log(textarea.selectionStart, currPosition);
+          textarea.value = text.join('');
+          textarea.selectionStart = currPosition - 1;
+        }
+      });
+    }
+  }
+
   reRender(value) {
-    console.log(value);
+    this.value = value;
   }
 }
 
 const keyboard = new Key();
 keyboard.createKeyboard();
-keyboard.createRow(KEYS.row1, 1);
-keyboard.createRow(KEYS.row2, 2);
-keyboard.createRow(KEYS.row3, 3);
-keyboard.createRow(KEYS.row4, 4);
-keyboard.createRow(KEYS.row5, 5);
-keyboard.reRender();
+keyboard.createRow(KEYS.row1, 1, currLang);
+keyboard.createRow(KEYS.row2, 2, currLang);
+keyboard.createRow(KEYS.row3, 3, currLang);
+keyboard.createRow(KEYS.row4, 4, currLang);
+keyboard.createRow(KEYS.row5, 5, currLang);
+keyboard.handleEnter();
+keyboard.handleBackSpace();
+keyboard.reRender('value');
