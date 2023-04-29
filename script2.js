@@ -1,4 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
+import KEYS from './keys.js';
+
 class Key2 {
   constructor(code, options) {
     this.element = document.createElement('div');
@@ -52,6 +54,7 @@ class Keyboard2 {
     this.textarea = textarea;
     this.keys = Object.entries(dictionary).map(([code, value]) => new Key2(code, value));
     this.element = document.createElement('div');
+    this.element.classList.add('keyboard');
     this.keys.forEach((key) => this.element.append(key.element));
     this.element.addEventListener('click', (event) => this.processAction(event.target.dataset.keyCode));
     this.render();
@@ -101,5 +104,5 @@ const textarea = document.createElement('textarea');
 
 document.body.append(textarea);
 
-const keyboard2 = new Keyboard2(RU_KEYS, textarea);
+const keyboard2 = new Keyboard2(KEYS.EN_KEYS, textarea);
 document.body.append(keyboard2.element);
