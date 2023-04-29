@@ -1,3 +1,34 @@
+const RU_KEYS = {
+  Backspace: {
+    key: 'Backspace',
+    actionType: 'backspace',
+  },
+  CapsLock: {
+    key: 'CapsLock',
+    actionType: 'capsLock',
+  },
+  ShiftLeft: {
+    key: 'Shift',
+    actionType: 'shift',
+  },
+  // digits
+  Digit1: {
+    key: '1',
+    shiftKey: '!',
+  },
+  Backquote: {
+    key: 'ё',
+  },
+
+};
+
+const EN_KEYS = {
+  Backquote: {
+    key: '`',
+    shiftKey: '~',
+  },
+};
+
 const KEYS = {
   row1: {
     Backquote: {
@@ -906,4 +937,3 @@ const KEYS = {
     },
   },
 };
-export default KEYS;

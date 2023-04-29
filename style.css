@@ -1,88 +1,89 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .wrapper {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .text-area {
-  width: 600px;
-  height: 200px;
-  margin: 20px 0;
-  font-family: Arial, sans-serif;
-  font-size: 24px;
-  padding: 10px;
+    width: 600px;
+    height: 200px;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    padding: 10px;
 }
 
 .keyboard {
-  padding: 10px;
-  background-color: slategray;
-  width: fit-content;
+    padding: 10px;
+    background-color: slategray;
+    width: fit-content;
 }
 
 .row {
-  display: flex;
-  list-style: none;
-  justify-content: center;
-  gap: 5px;
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    gap: 5px;
 }
 
 .row:not(:last-child) {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 .key {
-  width: 40px;
-  height: 40px;
-  background-color: #444444;
-  color: white;
-  border-radius: 5px;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Arial, sans-serif;
+    width: 100px;
+    height: 40px;
+    background-color: #444444;
+    color: white;
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
 }
 
 .key_backspace {
-  width: 120px;
+    width: 120px;
 }
 
 .key_tab,
 .key_delete {
-  width: 60px;
+    width: 60px;
 }
 
 .key_space {
-  width: 250px;
+    width: 250px;
 }
 
 .key_controls {
-  background-color: #222222;
+    background-color: #222222;
 }
 
 .key_controls-medium {
-  width: 60px;
+    width: 60px;
 }
 
 .key_controls-long {
-  width: 100px;
+    width: 100px;
 }
 
 .key.active {
-  background-color: #e18989;
-  transition: .5s;
+    background-color: #e18989;
+    transition: .5s;
 }
 
 .key:hover {
-  cursor: pointer;
-  background-color: #e18989;
-  transition: .5s;
+    cursor: pointer;
+    background-color: #e18989;
+    transition: .5s;
 }
+
 
