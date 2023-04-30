@@ -75,7 +75,7 @@ const EN_KEYS = {
     key: 't',
   },
   KeyY: {
-    key: 'н',
+    key: 'y',
   },
   KeyU: {
     key: 'u',

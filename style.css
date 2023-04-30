@@ -1,89 +1,94 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .wrapper {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-width: 740px;
 }
 
-.text-area {
-  width: 600px;
-  height: 200px;
-  margin: 20px 0;
-  font-family: Arial, sans-serif;
-  font-size: 24px;
-  padding: 10px;
+.textarea {
+    max-width: 900px;
+    width: 100%;
+    height: 200px;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    padding: 10px;
 
 }
 
 .keyboard {
-  padding: 10px;
-  background-color: slategray;
-  width: 100%;
-  max-width: 900px;
-  display: grid;
-  grid-template-areas:
+    padding: 10px;
+    background-color: slategray;
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    grid-template-areas:
     "Backquote      Digit1      Digit2      Digit3  Digit4  Digit5  Digit6  Digit7  Digit8  Digit9  Digit0      Minus       Equal           Backspace   Backspace"
     "Tab            KeyQ        KeyW        KeyE    KeyR    KeyT    KeyY    KeyU    KeyI    KeyO    KeyP        BracketLeft BracketRight    Backslash   Delete"
     "CapsLock       CapsLock    KeyA        KeyS    KeyD    KeyF    KeyG    KeyH    KeyJ    KeyK    KeyL        Semicolon   Quote           Enter       Enter"
     "ShiftLeft      ShiftLeft   KeyZ        KeyX    KeyC    KeyV    KeyB    KeyN    KeyM    Comma   Period      Slash       ArrowUp         ShiftRight  ShiftRight"
     "ControlLeft    MetaLeft    AltLeft     Space   Space   Space   Space   Space   Space   Space   AltRight    ArrowLeft   ArrowDown       ArrowRight  ControlRight";
-  gap: 5px;
-  grid-auto-columns: minmax(40px, 1fr);
+    gap: 5px;
+    grid-auto-columns: minmax(40px, 1fr);
 }
 
 .key {
-  /*width: 100px;*/
-  height: 40px;
-  background-color: #444444;
-  color: white;
-  border-radius: 5px;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Arial, sans-serif;
+    /*width: 100px;*/
+    height: 40px;
+    background-color: #444444;
+    color: white;
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    transition: .2s;
 }
 
 .key_backspace {
-  width: 120px;
+    width: 120px;
 }
 
 .key_tab,
 .key_delete {
-  width: 60px;
+    width: 60px;
 }
 
 .key_space {
-  width: 250px;
+    width: 250px;
 }
 
 .key_controls {
-  background-color: #222222;
+    background-color: #222222;
 }
 
 .key_controls-medium {
-  width: 60px;
+    width: 60px;
 }
 
 .key_controls-long {
-  width: 100px;
-}
-
-.key.active {
-  background-color: #e18989;
-  transition: .5s;
+    width: 100px;
 }
 
 .key:hover {
-  cursor: pointer;
-  background-color: #e18989;
-  transition: .5s;
+    cursor: pointer;
+    background-color: #e18989;
+    transition: .5s;
+}
+
+.key.active {
+    background-color: #e86a6a;
+    transition: .2s;
+    border-radius: 25%;
 }
 
 

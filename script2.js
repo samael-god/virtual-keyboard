@@ -43,6 +43,10 @@ class Key2 {
     this.element.classList.toggle('active');
     this.active = !this.active;
   }
+
+  removeActive() {
+    this.element.classList.remove('active');
+  }
 }
 
 class Keyboard2 {
@@ -56,7 +60,7 @@ class Keyboard2 {
     this.element = document.createElement('div');
     this.element.classList.add('keyboard');
     this.keys.forEach((key) => this.element.append(key.element));
-    this.element.addEventListener('click', (event) => this.processAction(event.target.dataset.keyCode));
+    this.element.addEventListener('mousedown', (event) => this.processAction(event.target.dataset.keyCode));
     this.render();
   }
 
@@ -70,6 +74,7 @@ class Keyboard2 {
       const text = this.textarea.value.split('');
       text.splice(currentPosition, 0, key.value);
       this.textarea.value = text.join('');
+      key.toggleActive();
       return;
     }
     switch (key.actionType) {
@@ -101,8 +106,46 @@ class Keyboard2 {
 }
 
 const textarea = document.createElement('textarea');
-
-document.body.append(textarea);
+const wrapper = document.createElement('div');
+wrapper.classList.add('wrapper');
+textarea.classList.add('textarea');
 
 const keyboard2 = new Keyboard2(KEYS.EN_KEYS, textarea);
-document.body.append(keyboard2.element);
+document.body.append(wrapper);
+wrapper.append(textarea);
+wrapper.append(keyboard2.element);
+
+window.addEventListener('keydown', (event) => {
+  event.preventDefault();
+  textarea.focus();
+  keyboard2.processAction(event.code);
+  console.log('otrabotal_keydown');
+});
+window.addEventListener('keyup', (event) => {
+  const key = keyboard2.keys.find((currkey) => currkey.code === event.code);
+  if (!key.isService) {
+    console.log(key.isService);
+    key.removeActive();
+  }
+});
+
+keyboard2.element.addEventListener('mousedown', (event) => {
+  const key = keyboard2.keys.find((currkey) => currkey.code === event.target.getAttribute('data-key-code'));
+  if (!key.isService) {
+    // TODO Remove eventListener
+    key.element.addEventListener('mouseleave', () => {
+      key.removeActive();
+    });
+  }
+});
+keyboard2.element.addEventListener('mouseup', (event) => {
+  if (!event.target.classList.contains('key')) {
+    return;
+  }
+
+  const key = keyboard2.keys.find((currkey) => currkey.code === event.target.getAttribute('data-key-code'));
+  console.log(key);
+  if (!key.isService) {
+    key.removeActive();
+  }
+});
