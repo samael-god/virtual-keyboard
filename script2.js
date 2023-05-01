@@ -1,19 +1,21 @@
 // eslint-disable-next-line max-classes-per-file
-import KEYS from './keys.js';
-
-let currentLang = KEYS.EN_KEYS;
+import DICTIONARIES from './keys.js';
 
 class Key2 {
   constructor(code, options) {
-    this.element = document.createElement('div');
+    this.element = document.createElement('button');
     this.element.style.gridArea = code;
     this.element.dataset.keyCode = code;
     this.element.classList.add('key');
     this.code = code;
+    this.reset(options);
+    this.active = false;
+  }
+
+  reset(options) {
     this.actionType = options.actionType;
     this.text = options.key;
     this.shiftText = options.shiftKey;
-    this.active = false;
   }
 
   get isService() {
@@ -26,7 +28,7 @@ class Key2 {
 
   render(context) {
     const {
-      shift, capslock, ctrl, alt,
+      shift, capslock,
     } = context;
     if (this.isService) {
       this.element.textContent = this.text;
@@ -39,9 +41,6 @@ class Key2 {
     if (capslock) {
       this.element.textContent = shift ? this.text.toLowerCase() : this.text.toUpperCase();
       return;
-    }
-    if (ctrl && alt) {
-      // this.dictionary;
     }
     this.element.textContent = shift ? this.text.toUpperCase() : this.text.toLowerCase();
   }
@@ -72,13 +71,16 @@ class Keyboard2 {
 
   langchange = false;
 
-  constructor(dictionary, textarea) {
+  constructor(dictionaries, textarea) {
     this.textarea = textarea;
-    this.keys = Object.entries(dictionary).map(([code, value]) => new Key2(code, value));
+    this.dictionaries = dictionaries;
+    this.currentLang = localStorage.getItem('keyboard_lang') || 'EN';
+    this.keys = Object.entries(dictionaries[this.currentLang])
+      .map(([code, value]) => new Key2(code, value));
     this.element = document.createElement('div');
     this.element.classList.add('keyboard');
     this.keys.forEach((key) => this.element.append(key.element));
-    this.element.addEventListener('mousedown', (event) => this.processAction(event.target.dataset.keyCode));
+    this.element.addEventListener('click', (event) => this.processAction(event.target.dataset.keyCode));
     this.render();
   }
 
@@ -88,18 +90,11 @@ class Keyboard2 {
       return;
     }
     if (!key.isService && !key.isServiceHold) {
-      const currentPosition = this.textarea.selectionStart;
-      const text = this.textarea.value.split('');
-      text.splice(currentPosition, 0, key.value);
-      this.textarea.value = text.join('');
-      key.toggleActive();
-      this.textarea.selectionStart = currentPosition + 1;
-      this.textarea.selectionEnd = this.textarea.selectionStart;
+      this.insert(key.value);
       return;
     }
     switch (key.actionType) {
       case 'backspace': {
-        key.toggleActive();
         const currPosition = this.textarea.selectionStart;
         const lastPosition = this.textarea.selectionEnd;
         const text = this.textarea.value.split('');
@@ -133,35 +128,19 @@ class Keyboard2 {
         if (this.activeShift && this.activeShift === key) {
           this.activeShift = false;
           key.toggleActive();
-          this.shift = !this.shift;
           this.render();
           return;
         }
         key.toggleActive();
         this.activeShift = key;
-        this.shift = !this.shift;
         this.render();
         return;
       }
       case 'enter': {
-        key.toggleActive();
-        const currPosition = this.textarea.selectionStart;
-        const lastPosition = this.textarea.selectionEnd;
-        const text = this.textarea.value.split('');
-        if (currPosition === lastPosition) {
-          text.splice(this.textarea.selectionStart, 0, '\n');
-          this.textarea.value = text.join('');
-          this.textarea.selectionStart = currPosition + 1;
-        } else {
-          text.splice(currPosition, lastPosition - currPosition, '\n');
-          this.textarea.value = text.join('');
-          this.textarea.selectionStart = currPosition;
-        }
-        this.textarea.selectionEnd = this.textarea.selectionStart;
+        this.insert('\n');
         return;
       }
       case 'delete': {
-        key.toggleActive();
         const currPosition = this.textarea.selectionStart;
         const lastPosition = this.textarea.selectionEnd;
         const text = this.textarea.value.split('');
@@ -179,103 +158,63 @@ class Keyboard2 {
         return;
       }
       case 'space': {
-        key.toggleActive();
-        const currPosition = this.textarea.selectionStart;
-        const lastPosition = this.textarea.selectionEnd;
-        const text = this.textarea.value.split('');
-        if (currPosition === lastPosition) {
-          text.splice(currPosition, 0, ' ');
-          this.textarea.value = text.join('');
-          this.textarea.selectionStart = currPosition + 1;
-        } else {
-          text.splice(currPosition, lastPosition - currPosition, ' ');
-          this.textarea.value = text.join('');
-          this.textarea.selectionStart = currPosition + 1;
-        }
-        this.textarea.selectionEnd = this.textarea.selectionStart;
-
+        this.insert(' ');
         return;
       }
       case 'tab': {
-        key.toggleActive();
-        const currPosition = this.textarea.selectionStart;
-        const lastPosition = this.textarea.selectionEnd;
-        const text = this.textarea.value.split('');
-        if (currPosition === lastPosition) {
-          text.splice(currPosition, 0, '    ');
-          this.textarea.value = text.join('');
-          this.textarea.selectionStart = currPosition + 4;
-        } else {
-          text.splice(currPosition, lastPosition - currPosition, '    ');
-          this.textarea.value = text.join('');
-          this.textarea.selectionStart = currPosition + 4;
-        }
-        this.textarea.selectionEnd = this.textarea.selectionStart;
+        this.insert('    ');
 
         return;
       }
       case 'langchange': {
         if (key.text === 'Alt') {
-          if (this.activeAlt && this.activeAlt !== key) {
+          if (this.activeAlt) {
             this.activeAlt.removeActive();
-            key.toggleActive();
-            this.activeAlt = key;
-            if (this.ctrl) {
-              console.log('pereklu4il');
-              console.log(this);
-              currentLang = KEYS.RU_KEYS;
-              this.render();
-            }
-            return;
           }
-          if (this.activeAlt && this.activeAlt === key) {
-            key.toggleActive();
-            this.activeAlt = false;
-            this.alt = false;
-            return;
-          }
-          this.alt = !this.alt;
           key.toggleActive();
           this.activeAlt = key;
-          if (this.ctrl) {
-            console.log('pereklu4il');
-            console.log(this);
-            currentLang = KEYS.RU_KEYS;
-            this.render();
-          }
-          return;
         }
         if (key.text === 'Ctrl') {
-          if (this.activeCtrl && this.activeCtrl !== key) {
+          if (this.activeCtrl) {
             this.activeCtrl.removeActive();
-            key.toggleActive();
-            this.activeCtrl = key;
-            if (this.alt) {
-              console.log('pereklu4il');
-              console.log(this);
-              currentLang = KEYS.RU_KEYS;
-              this.render();
-            }
-            return;
           }
-          if (this.activeCtrl && this.activeCtrl === key) {
-            key.toggleActive();
-            this.activeCtrl = false;
-            this.ctrl = false;
-            return;
-          }
-
-          this.ctrl = !this.ctrl;
           key.toggleActive();
           this.activeCtrl = key;
-          if (this.alt) {
-            console.log('pereklu4il');
-            console.log(this);
-            currentLang = KEYS.RU_KEYS;
-            this.render();
-          }
-          return;
         }
+        if (this.activeAlt && this.activeCtrl) {
+          this.activeAlt.removeActive();
+          this.activeCtrl.removeActive();
+          this.activeAlt = null;
+          this.activeCtrl = null;
+          this.changeLang();
+        }
+        return;
+      }
+      case 'arrowLeft': {
+        this.textarea.selectionStart -= 1;
+        this.textarea.selectionEnd = this.textarea.selectionStart;
+        return;
+      }
+      case 'arrowRight': {
+        this.textarea.selectionEnd += 1;
+        this.textarea.selectionStart = this.textarea.selectionEnd;
+        return;
+      }
+      case 'arrowDown': {
+        const rows = this.calculateRows();
+        const { position, rowIndex } = this.calculatePositionInRow(rows);
+        const rightOffset = rows[rowIndex].length - position;
+        const nextRowLeftOffset = Math.min(rows[rowIndex + 1]?.length || 0, position);
+        this.textarea.selectionStart += rightOffset + nextRowLeftOffset;
+        this.textarea.selectionEnd = this.textarea.selectionStart;
+        return;
+      }
+      case 'arrowUp': {
+        const rows = this.calculateRows();
+        const { position, rowIndex } = this.calculatePositionInRow(rows);
+        const prevRowRightOffset = Math.max((rows[rowIndex - 1]?.length || 0) - position, 0);
+        this.textarea.selectionStart += -position - prevRowRightOffset;
+        this.textarea.selectionEnd = this.textarea.selectionStart;
         return;
       }
       default: {
@@ -287,10 +226,66 @@ class Keyboard2 {
   render() {
     this.keys.forEach((key) => key.render({
       capslock: this.capslock,
-      shift: this.shift,
+      shift: !!this.activeShift,
       ctrl: this.ctrl,
       alt: this.alt,
     }));
+  }
+
+  changeLang() {
+    this.currentLang = this.currentLang === 'EN' ? 'RU' : 'EN';
+    const dictionary = this.dictionaries[this.currentLang];
+    localStorage.setItem('keyboard_lang', this.currentLang);
+    this.keys.forEach((key) => key.reset(dictionary[key.code]));
+    this.render();
+  }
+
+  insert(text) {
+    const currPosition = this.textarea.selectionStart;
+    const lastPosition = this.textarea.selectionEnd;
+    const currentText = this.textarea.value.split('');
+    if (currPosition === lastPosition) {
+      currentText.splice(this.textarea.selectionStart, 0, text);
+      this.textarea.value = currentText.join('');
+      this.textarea.selectionStart = currPosition + text.length;
+    } else {
+      currentText.splice(currPosition, lastPosition - currPosition, text);
+      this.textarea.value = currentText.join('');
+      this.textarea.selectionStart = currPosition + text.length;
+    }
+    this.textarea.selectionEnd = this.textarea.selectionStart;
+  }
+
+  calculateRows() {
+    const text = this.textarea.value;
+    let temp = '';
+    const rows = [];
+    const maxCols = Math.floor((parseInt(getComputedStyle(this.textarea).width, 10) - 22) / 13.2);
+    for (let i = 0; i < text.length; i += 1) {
+      temp += text[i];
+      if (temp.length === maxCols || text[i] === '\n') {
+        rows.push(temp);
+        temp = '';
+      }
+    }
+    if (temp) {
+      rows.push(temp);
+    }
+    return rows;
+  }
+
+  calculatePositionInRow(rows) {
+    let position = this.textarea.selectionStart;
+    let rowIndex = 0;
+    for (let i = 0; i < rows.length; i += 1) {
+      if (position > rows[i].length) {
+        position -= rows[i].length;
+      } else {
+        rowIndex = i;
+        break;
+      }
+    }
+    return { position, rowIndex };
   }
 }
 
@@ -302,47 +297,30 @@ textarea.classList.add('textarea');
 text.classList.add('message');
 text.innerHTML = 'Для смены раскладки используйте ctrl + alt. <br> Клавиатура реализована для Windows. <br> "Залипание" клавишь shift, alt и ctrl так и задумано.';
 
-const keyboard2 = new Keyboard2(currentLang, textarea);
+const keyboard2 = new Keyboard2(DICTIONARIES, textarea);
 document.body.append(wrapper);
-// TODO add autofocus on textarea
 wrapper.append(textarea);
 wrapper.append(keyboard2.element);
 wrapper.append(text);
 
 window.addEventListener('keydown', (event) => {
+  const key = keyboard2.keys.find((currentKey) => currentKey.code === event.code);
+  if (!key) {
+    return;
+  }
   event.preventDefault();
   keyboard2.processAction(event.code);
+  if (!key.isService || (key.isService && !key.isServiceHold)) {
+    key.toggleActive();
+  }
 });
 window.addEventListener('keyup', (event) => {
-  const key = keyboard2.keys.find((currkey) => currkey.code === event.code);
+  const key = keyboard2.keys.find((currentKey) => currentKey.code === event.code);
   if (key && !key.isServiceHold) {
     key.removeActive();
   }
 });
 
-keyboard2.element.addEventListener('mousedown', (event) => {
-  if (!event.target.classList.contains('key')) {
-    return;
-  }
-  const key = keyboard2.keys.find((currkey) => currkey.code === event.target.getAttribute('data-key-code'));
-  if (key && !key.isServiceHold) {
-    // TODO Remove eventListener
-
-    key.element.addEventListener('mouseleave', () => {
-      key.removeActive();
-    });
-  }
-});
-keyboard2.element.addEventListener('mouseup', (event) => {
-  if (!event.target.classList.contains('key')) {
-    return;
-  }
-
-  const key = keyboard2.keys.find((currkey) => currkey.code === event.target.getAttribute('data-key-code'));
-  if (!key.isServiceHold) {
-    key.removeActive();
-  }
-});
 window.addEventListener('click', () => {
   textarea.focus();
 });

@@ -1,4 +1,4 @@
-const EN_KEYS = {
+const EN = {
   Backquote: {
     key: '`',
     shiftKey: '~',
@@ -187,6 +187,7 @@ const EN_KEYS = {
   },
   ArrowUp: {
     key: '▲',
+    actionType: 'arrowUp',
   },
   ShiftRight: {
     key: 'Shift',
@@ -214,19 +215,22 @@ const EN_KEYS = {
   },
   ArrowLeft: {
     key: '◄',
+    actionType: 'arrowLeft',
   },
   ArrowDown: {
     key: '▼',
+    actionType: 'arrowDown',
   },
   ArrowRight: {
     key: '►',
+    actionType: 'arrowRight',
   },
   ControlRight: {
     key: 'Ctrl',
     actionType: 'langchange',
   },
 };
-const RU_KEYS = {
+const RU = {
   Backquote: {
     key: 'ё',
   },
@@ -408,6 +412,7 @@ const RU_KEYS = {
   },
   ArrowUp: {
     key: '▲',
+    actionType: 'arrowUp',
   },
   ShiftRight: {
     key: 'Shift',
@@ -435,12 +440,15 @@ const RU_KEYS = {
   },
   ArrowLeft: {
     key: '◄',
+    actionType: 'arrowLeft',
   },
   ArrowDown: {
     key: '▼',
+    actionType: 'arrowDown',
   },
   ArrowRight: {
     key: '►',
+    actionType: 'arrowRight',
   },
   ControlRight: {
     key: 'Ctrl',
@@ -448,4 +456,4 @@ const RU_KEYS = {
   },
 };
 
-export default { EN_KEYS, RU_KEYS };
+export default { EN, RU };
