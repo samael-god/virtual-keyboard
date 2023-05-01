@@ -168,15 +168,31 @@ class Keyboard2 {
       }
       case 'langchange': {
         if (key.text === 'Alt') {
-          if (this.activeAlt) {
+          if (this.activeAlt && key !== this.activeAlt) {
+            key.toggleActive();
             this.activeAlt.removeActive();
+            this.activeAlt = key;
+            return;
+          }
+          if (key === this.activeAlt) {
+            key.removeActive();
+            this.activeAlt = null;
+            return;
           }
           key.toggleActive();
           this.activeAlt = key;
         }
         if (key.text === 'Ctrl') {
-          if (this.activeCtrl) {
+          if (this.activeCtrl && key !== this.activeCtrl) {
+            key.toggleActive();
             this.activeCtrl.removeActive();
+            this.activeCtrl = key;
+            return;
+          }
+          if (key === this.activeCtrl) {
+            key.removeActive();
+            this.activeCtrl = null;
+            return;
           }
           key.toggleActive();
           this.activeCtrl = key;
