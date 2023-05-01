@@ -78,7 +78,7 @@ class Keyboard2 {
     if (!key) {
       return;
     }
-    if (!key.isService) {
+    if (!key.isService && !key.isServiceHold) {
       const currentPosition = this.textarea.selectionStart;
       const text = this.textarea.value.split('');
       text.splice(currentPosition, 0, key.value);
@@ -121,11 +121,16 @@ class Keyboard2 {
           this.render();
           return;
         }
-        console.log('otrabotal');
+        if (this.activeShift && this.activeShift === key) {
+          this.activeShift = false;
+          key.toggleActive();
+          this.shift = !this.shift;
+          this.render();
+          return;
+        }
+        key.toggleActive();
         this.activeShift = key;
         this.shift = !this.shift;
-        console.log(this.shift);
-        key.toggleActive();
         this.render();
         return;
       }
@@ -201,6 +206,13 @@ class Keyboard2 {
         return;
       }
       case 'langchange': {
+        if (key.key === 'Alt') {
+          this.activeAlt = key;
+        }
+        if (key.key === 'Ctrl') {
+          this.activeCtrl = key;
+        }
+        console.log(this.activeAlt, this.activeCtrl);
         key.toggleActive();
         return;
       }
@@ -234,7 +246,7 @@ window.addEventListener('keydown', (event) => {
 });
 window.addEventListener('keyup', (event) => {
   const key = keyboard2.keys.find((currkey) => currkey.code === event.code);
-  if (!key.isServiceHold) {
+  if (key && !key.isServiceHold) {
     key.removeActive();
   }
 });
@@ -244,7 +256,7 @@ keyboard2.element.addEventListener('mousedown', (event) => {
     return;
   }
   const key = keyboard2.keys.find((currkey) => currkey.code === event.target.getAttribute('data-key-code'));
-  if (!key.isServiceHold) {
+  if (key && !key.isServiceHold) {
     // TODO Remove eventListener
     console.log(key.isServiceHold);
     key.element.addEventListener('mouseleave', () => {
