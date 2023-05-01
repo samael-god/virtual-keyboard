@@ -206,7 +206,7 @@ const EN_KEYS = {
   },
   Space: {
     key: ' ',
-    actionType: 'spaceKey',
+    actionType: 'space',
   },
   AltRight: {
     key: 'Alt',
@@ -427,7 +427,7 @@ const RU_KEYS = {
   },
   Space: {
     key: ' ',
-    actionType: 'spaceKey',
+    actionType: 'space',
   },
   AltRight: {
     key: 'Alt',
