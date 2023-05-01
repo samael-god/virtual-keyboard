@@ -2,6 +2,7 @@
 import KEYS from './keys.js';
 
 let currentLang = KEYS.EN_KEYS;
+
 class Key2 {
   constructor(code, options) {
     this.element = document.createElement('div');
@@ -299,7 +300,7 @@ const text = document.createElement('p');
 wrapper.classList.add('wrapper');
 textarea.classList.add('textarea');
 text.classList.add('message');
-text.innerHTML = 'Для смены раскладки используйте ctrl + alt. <br> Клавиатура реализована для Windows. <br> Залипание клавишь shift, alt и ctrl так и задумано.';
+text.innerHTML = 'Для смены раскладки используйте ctrl + alt. <br> Клавиатура реализована для Windows. <br> "Залипание" клавишь shift, alt и ctrl так и задумано.';
 
 const keyboard2 = new Keyboard2(currentLang, textarea);
 document.body.append(wrapper);
