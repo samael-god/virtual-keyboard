@@ -44,7 +44,6 @@
 }
 
 .key {
-    /*width: 100px;*/
     height: 40px;
     background-color: #444444;
     color: white;
@@ -57,29 +56,10 @@
     transition: .2s;
 }
 
-.key_backspace {
-    width: 120px;
-}
-
-.key_tab,
-.key_delete {
-    width: 60px;
-}
-
-.key_space {
-    width: 250px;
-}
-
-.key_controls {
-    background-color: #222222;
-}
-
-.key_controls-medium {
-    width: 60px;
-}
-
-.key_controls-long {
-    width: 100px;
+.message {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    margin-top: 20px;
 }
 
 .key:hover {

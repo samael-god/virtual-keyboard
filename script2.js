@@ -1,6 +1,7 @@
 // eslint-disable-next-line max-classes-per-file
 import KEYS from './keys.js';
 
+let currentLang = KEYS.EN_KEYS;
 class Key2 {
   constructor(code, options) {
     this.element = document.createElement('div');
@@ -23,7 +24,9 @@ class Key2 {
   }
 
   render(context) {
-    const { shift, capslock } = context;
+    const {
+      shift, capslock, ctrl, alt,
+    } = context;
     if (this.isService) {
       this.element.textContent = this.text;
       return;
@@ -35,6 +38,9 @@ class Key2 {
     if (capslock) {
       this.element.textContent = shift ? this.text.toLowerCase() : this.text.toUpperCase();
       return;
+    }
+    if (ctrl && alt) {
+      // this.dictionary;
     }
     this.element.textContent = shift ? this.text.toUpperCase() : this.text.toLowerCase();
   }
@@ -63,6 +69,8 @@ class Keyboard2 {
 
   alt = false;
 
+  langchange = false;
+
   constructor(dictionary, textarea) {
     this.textarea = textarea;
     this.keys = Object.entries(dictionary).map(([code, value]) => new Key2(code, value));
@@ -74,7 +82,7 @@ class Keyboard2 {
   }
 
   processAction(keyCode) {
-    const key = this.keys.find((currkey) => currkey.code === keyCode);
+    const key = this.keys.find((currentKey) => currentKey.code === keyCode);
     if (!key) {
       return;
     }
@@ -206,14 +214,67 @@ class Keyboard2 {
         return;
       }
       case 'langchange': {
-        if (key.key === 'Alt') {
+        if (key.text === 'Alt') {
+          if (this.activeAlt && this.activeAlt !== key) {
+            this.activeAlt.removeActive();
+            key.toggleActive();
+            this.activeAlt = key;
+            if (this.ctrl) {
+              console.log('pereklu4il');
+              console.log(this);
+              currentLang = KEYS.RU_KEYS;
+              this.render();
+            }
+            return;
+          }
+          if (this.activeAlt && this.activeAlt === key) {
+            key.toggleActive();
+            this.activeAlt = false;
+            this.alt = false;
+            return;
+          }
+          this.alt = !this.alt;
+          key.toggleActive();
           this.activeAlt = key;
+          if (this.ctrl) {
+            console.log('pereklu4il');
+            console.log(this);
+            currentLang = KEYS.RU_KEYS;
+            this.render();
+          }
+          return;
         }
-        if (key.key === 'Ctrl') {
+        if (key.text === 'Ctrl') {
+          if (this.activeCtrl && this.activeCtrl !== key) {
+            this.activeCtrl.removeActive();
+            key.toggleActive();
+            this.activeCtrl = key;
+            if (this.alt) {
+              console.log('pereklu4il');
+              console.log(this);
+              currentLang = KEYS.RU_KEYS;
+              this.render();
+            }
+            return;
+          }
+          if (this.activeCtrl && this.activeCtrl === key) {
+            key.toggleActive();
+            this.activeCtrl = false;
+            this.ctrl = false;
+            return;
+          }
+
+          this.ctrl = !this.ctrl;
+          key.toggleActive();
           this.activeCtrl = key;
+          if (this.alt) {
+            console.log('pereklu4il');
+            console.log(this);
+            currentLang = KEYS.RU_KEYS;
+            this.render();
+          }
+          return;
         }
-        console.log(this.activeAlt, this.activeCtrl);
-        key.toggleActive();
         return;
       }
       default: {
@@ -224,21 +285,28 @@ class Keyboard2 {
 
   render() {
     this.keys.forEach((key) => key.render({
-      capslock: this.capslock, shift: this.shift, alt: this.alt, ctrl: this.ctrl,
+      capslock: this.capslock,
+      shift: this.shift,
+      ctrl: this.ctrl,
+      alt: this.alt,
     }));
   }
 }
 
 const textarea = document.createElement('textarea');
 const wrapper = document.createElement('div');
+const text = document.createElement('p');
 wrapper.classList.add('wrapper');
 textarea.classList.add('textarea');
+text.classList.add('message');
+text.innerHTML = 'Для смены раскладки используйте ctrl + alt. <br> Клавиатура реализована для Windows. <br> Залипание клавишь shift, alt и ctrl так и задумано.';
 
-const keyboard2 = new Keyboard2(KEYS.EN_KEYS, textarea);
+const keyboard2 = new Keyboard2(currentLang, textarea);
 document.body.append(wrapper);
 // TODO add autofocus on textarea
 wrapper.append(textarea);
 wrapper.append(keyboard2.element);
+wrapper.append(text);
 
 window.addEventListener('keydown', (event) => {
   event.preventDefault();
@@ -258,7 +326,7 @@ keyboard2.element.addEventListener('mousedown', (event) => {
   const key = keyboard2.keys.find((currkey) => currkey.code === event.target.getAttribute('data-key-code'));
   if (key && !key.isServiceHold) {
     // TODO Remove eventListener
-    console.log(key.isServiceHold);
+
     key.element.addEventListener('mouseleave', () => {
       key.removeActive();
     });
